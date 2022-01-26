@@ -71,6 +71,50 @@ class Client:
 
         return response
 
+    def get_files(self, login: str, password: str):
+        self.curl.setopt(self.curl.URL, self.base_url + 'files/')
+        self.curl.setopt(self.curl.CUSTOMREQUEST, 'GET')
+        self.curl.setopt(self.curl.HTTPHEADER, ['Client-Login: ' + login, 'Client-Password: ' + password])
+        self.curl.perform()
+
+        response = self.result_buffer.getvalue()
+        self.__prepare_buffer()
+
+        return response
+
+    def download_file(self, login: str, password: str, filename: str):
+        self.curl.setopt(self.curl.URL, self.base_url + 'files/' + filename)
+        self.curl.setopt(self.curl.CUSTOMREQUEST, 'GET')
+        self.curl.setopt(self.curl.HTTPHEADER, ['Client-Login: ' + login, 'Client-Password: ' + password])
+        with open(filename, 'wb') as f:
+            self.curl.setopt(self.curl.WRITEDATA, f)
+            self.curl.perform()
+
+        self.__prepare_buffer()
+        return 
+
+    def upload_file(self, login: str, password: str, filename: str):
+        self.curl.setopt(self.curl.URL, self.base_url + 'files/')
+        self.curl.setopt(self.curl.CUSTOMREQUEST, 'POST')
+        self.curl.setopt(self.curl.HTTPHEADER, ['Client-Login: ' + login, 'Client-Password: ' + password])
+        self.curl.setopt(self.curl.HTTPPOST, [('file', (self.curl.FORM_FILE, filename))])
+        self.curl.perform()
+
+        response = self.result_buffer.getvalue()
+        self.__prepare_buffer()
+
+        return response
+
+    def delete_file(self, login: str, password: str, filename: str):
+        self.curl.setopt(self.curl.URL, self.base_url + 'files/' + filename)
+        self.curl.setopt(self.curl.CUSTOMREQUEST, 'DELETE')
+        self.curl.setopt(self.curl.HTTPHEADER, ['Client-Login: ' + login, 'Client-Password: ' + password])
+        self.curl.perform()
+
+        response = self.result_buffer.getvalue()
+        self.__prepare_buffer()
+
+        return response
 
 
 
